@@ -1,5 +1,6 @@
 package com.renanb.fly_way_backend.handler;
 
+import com.renanb.fly_way_backend.exception.exceptions.AddressNotFoundException;
 import com.renanb.fly_way_backend.exception.validator.InputValidator;
 import com.renanb.fly_way_backend.repository.TripAddressRepository;
 import com.renanb.fly_way_backend.model.TripAddress;
@@ -10,6 +11,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.FileNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +29,8 @@ public class TripAddressHandler {
     }
     public Mono<ServerResponse> findById(ServerRequest request){
         Long id = Long.valueOf(request.pathVariable("id"));
-        Mono<TripAddress> response = tripAddressRepository.findById(id);
+        Mono<TripAddress> response = tripAddressRepository.findById(id)
+                .switchIfEmpty(Mono.error(new AddressNotFoundException("Address not found with id " + id)));
         return ServerResponse.ok().body(response, TripAddress.class);
     }
     public Mono<ServerResponse> save(ServerRequest request){
