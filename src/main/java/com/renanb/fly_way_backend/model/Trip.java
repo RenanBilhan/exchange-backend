@@ -1,5 +1,7 @@
 package com.renanb.fly_way_backend.model;
 
+import org.springframework.data.relational.core.mapping.MappedCollection;
+
 import java.util.List;
 
 public record Trip (
@@ -9,5 +11,6 @@ public record Trip (
         String description,
         Double price,
         byte[] thumbnail,
-        List<byte[]> pictures
+        @MappedCollection(idColumn = "trip_id", keyColumn = "id_trip_address")
+        TripAddress tripAddress
 ){}
